@@ -10,6 +10,7 @@ x86/
 [Aa][Rr][Mm]64/
 publish/
 artifacts/
+dist/
 *.binlog
 
 # Visual Studio / Rider
