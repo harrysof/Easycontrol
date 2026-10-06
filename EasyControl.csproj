@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+
+    <AssemblyName>EasyControl</AssemblyName>
+    <RootNamespace>EasyControl</RootNamespace>
+    <ApplicationIcon>Assets\generated\EasyControl.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+
+    <Version>1.0.0</Version>
+    <Product>EasyControl</Product>
+    <AssemblyTitle>EasyControl</AssemblyTitle>
+    <Company>EasyControl</Company>
+    <Description>DirectInput to XInput converter, mapper and screenshot tool.</Description>
+
+    <!-- keep the helper icon generator out of this project's compile glob -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);tools\**</DefaultItemExcludes>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.4.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.*" />
+    <PackageReference Include="Nefarius.ViGEm.Client" Version="1.21.256" />
+    <PackageReference Include="Vortice.DirectInput" Version="3.8.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\logo.png" />
+    <Resource Include="Assets\generated\EasyControl.ico" />
+  </ItemGroup>
+
+  <!-- Bundled driver installers (ViGEmBus + HidHide) so a fresh install needs no downloads. -->
+  <ItemGroup>
+    <None Update="Installers\*.exe" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Regenerate the application icon whenever Assets\logo.png changes. -->
+  <Target Name="GenerateAppIcon"
+          BeforeTargets="BeforeBuild"
+          Inputs="$(MSBuildProjectDirectory)\Assets\logo.png"
+          Outputs="$(MSBuildProjectDirectory)\Assets\generated\EasyControl.ico">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\Assets\generated" />
+    <Exec Command="dotnet run --project &quot;$(MSBuildProjectDirectory)\tools\IconGen\IconGen.csproj&quot; -c Release -- &quot;$(MSBuildProjectDirectory)\Assets\logo.png&quot; &quot;$(MSBuildProjectDirectory)\Assets\generated\EasyControl.ico&quot;" />
+  </Target>
+
+</Project>

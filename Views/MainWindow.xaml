@@ -1,0 +1,64 @@
+<Window x:Class="EasyControl.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="EasyControl"
+        Width="400"
+        Height="560"
+        MinWidth="400"
+        MinHeight="560"
+        MaxWidth="400"
+        MaxHeight="560"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource EcWindowBackground}"
+        Foreground="{StaticResource EcTextPrimary}"
+        TextOptions.TextFormattingMode="Ideal"
+        FontFamily="Segoe UI">
+
+    <DockPanel>
+
+        <!-- Purple header strip -->
+        <Grid DockPanel.Dock="Top" Height="52">
+            <Border Background="{StaticResource EcAccentGradient}" />
+            <Grid Margin="8,0,8,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Style="{StaticResource EcIconButton}"
+                        Foreground="White"
+                        Content="&#xE72B;"
+                        Command="{Binding GoHomeCommand}"
+                        Visibility="{Binding CanGoBack, Converter={StaticResource BoolToVisibility}}" />
+
+                <Border Grid.Column="1" Width="26" Height="26" CornerRadius="7"
+                        Margin="6,0,10,0" Background="#33000000">
+                    <Image Source="/Assets/logo.png" Width="26" Height="26" Stretch="UniformToFill" />
+                </Border>
+
+                <TextBlock Grid.Column="2"
+                           Text="{Binding Title}"
+                           VerticalAlignment="Center"
+                           Foreground="White"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           TextTrimming="CharacterEllipsis" />
+
+                <Button Grid.Column="3"
+                        Style="{StaticResource EcIconButton}"
+                        Foreground="White"
+                        Content="&#xE713;"
+                        Command="{Binding OpenSettingsCommand}"
+                        ToolTip="Settings" />
+            </Grid>
+        </Grid>
+
+        <!-- Content -->
+        <ContentControl Content="{Binding CurrentPage}" Margin="12" />
+
+    </DockPanel>
+</Window>

@@ -1,0 +1,125 @@
+<UserControl x:Class="EasyControl.Views.DevicesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <Style x:Key="EcDeviceCard" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource EcTextPrimary}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{StaticResource EcSurface}"
+                                BorderBrush="{StaticResource EcBorder}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="12">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource EcAccent}" />
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource EcSurfaceAlt}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel>
+
+        <!-- ViGEmBus missing banner -->
+        <Border DockPanel.Dock="Top"
+                CornerRadius="8"
+                Padding="12"
+                Margin="0,0,0,10"
+                Background="#2A1E14"
+                BorderBrush="#5A3A1E"
+                BorderThickness="1"
+                Visibility="{Binding DriverMissing, Converter={StaticResource BoolToVisibility}}">
+            <StackPanel>
+                <TextBlock Text="ViGEmBus not detected" Foreground="#F0B37E" FontSize="12" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding DriverStatus}"
+                           Foreground="{StaticResource EcTextSecondary}"
+                           FontSize="10"
+                           TextWrapping="Wrap"
+                           Margin="0,4,0,0" />
+                <TextBlock Text="Install the free ViGEmBus driver, then press Refresh. Without it, mapping to a virtual controller is unavailable."
+                           Foreground="{StaticResource EcTextMuted}"
+                           FontSize="10"
+                           TextWrapping="Wrap"
+                           Margin="0,4,0,0" />
+            </StackPanel>
+        </Border>
+
+        <!-- Default status + refresh -->
+        <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding DefaultStatus}"
+                       Style="{StaticResource EcSecondaryText}"
+                       VerticalAlignment="Center" />
+            <Button Grid.Column="1"
+                    Content="Refresh"
+                    Style="{StaticResource EcSecondaryButton}"
+                    Command="{Binding RefreshCommand}" />
+        </Grid>
+
+        <TextBlock DockPanel.Dock="Top"
+                   Text="Select a controller"
+                   Style="{StaticResource EcHeaderText}"
+                   Margin="2,0,0,8" />
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <ItemsControl ItemsSource="{Binding Devices}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource EcDeviceCard}"
+                                    Margin="0,0,0,8"
+                                    Command="{Binding DataContext.SelectCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    CommandParameter="{Binding}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="{Binding Name}"
+                                                   Style="{StaticResource EcHeaderText}"
+                                                   TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Subtitle}"
+                                                   Style="{StaticResource EcCaptionText}"
+                                                   Margin="0,3,0,0" />
+                                    </StackPanel>
+                                    <Border Grid.Column="1"
+                                            CornerRadius="4"
+                                            Padding="6,2"
+                                            Background="#2E2846"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Badge}"
+                                                   FontSize="9"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource EcAccentLighter}" />
+                                    </Border>
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock Text="No controllers found. Connect a controller and press Refresh."
+                           Style="{StaticResource EcCaptionText}"
+                           TextWrapping="Wrap"
+                           Margin="2,8,0,0"
+                           Visibility="{Binding IsEmpty, Converter={StaticResource BoolToVisibility}}" />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

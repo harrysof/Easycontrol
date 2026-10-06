@@ -1,0 +1,143 @@
+<UserControl x:Class="EasyControl.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,12">
+                <StackPanel>
+                    <ToggleButton Style="{StaticResource EcSwitch}"
+                                  IsChecked="{Binding RunAtStartup}"
+                                  Content="Run when Windows starts" />
+                    <ToggleButton Style="{StaticResource EcSwitch}"
+                                  IsChecked="{Binding HideTrayIcon}"
+                                  Content="Don't show in the notification tray"
+                                  Margin="0,14,0,0" />
+                    <ToggleButton Style="{StaticResource EcSwitch}"
+                                  IsChecked="{Binding StartMinimized}"
+                                  Content="Start minimized"
+                                  Margin="0,14,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Components (bundled drivers) -->
+            <TextBlock Text="Components" Style="{StaticResource EcHeaderText}" Margin="2,0,0,4" />
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,12">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="ViGEmBus" Style="{StaticResource EcBodyText}" />
+                            <TextBlock Text="Virtual Xbox 360 controller output"
+                                       Style="{StaticResource EcCaptionText}"
+                                       Margin="0,2,0,0" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="Not installed" />
+                                    <Setter Property="Foreground" Value="{StaticResource EcTextMuted}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ViGEmInstalled}" Value="True">
+                                            <Setter Property="Text" Value="Installed" />
+                                            <Setter Property="Foreground" Value="{StaticResource EcSuccess}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="HidHide" Style="{StaticResource EcBodyText}" />
+                            <TextBlock Text="Hides the physical controller while mapping"
+                                       Style="{StaticResource EcCaptionText}"
+                                       Margin="0,2,0,0" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="Not installed" />
+                                    <Setter Property="Foreground" Value="{StaticResource EcTextMuted}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding HidHideInstalled}" Value="True">
+                                            <Setter Property="Text" Value="Installed" />
+                                            <Setter Property="Foreground" Value="{StaticResource EcSuccess}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+
+                    <TextBlock Text="These are bundled with EasyControl \u2014 no download needed. Installing asks for administrator approval once."
+                               Style="{StaticResource EcCaptionText}"
+                               TextWrapping="Wrap"
+                               Margin="0,10,0,0"
+                               Visibility="{Binding CanInstallComponents, Converter={StaticResource BoolToVisibility}}" />
+
+                    <Button Content="Install missing components"
+                            Style="{StaticResource EcPrimaryButton}"
+                            HorizontalAlignment="Left"
+                            Margin="0,8,0,0"
+                            Command="{Binding InstallComponentsCommand}"
+                            Visibility="{Binding CanInstallComponents, Converter={StaticResource BoolToVisibility}}" />
+
+                    <Button Content="Get HidHide"
+                            Style="{StaticResource EcSecondaryButton}"
+                            HorizontalAlignment="Left"
+                            Margin="0,8,0,0"
+                            Command="{Binding GetHidHideCommand}"
+                            Visibility="{Binding ShowGetHidHide, Converter={StaticResource BoolToVisibility}}" />
+
+                    <TextBlock Text="{Binding InstallMessage}"
+                               Style="{StaticResource EcCaptionText}"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="Controller" Style="{StaticResource EcHeaderText}" Margin="2,0,0,4" />
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,12">
+                <StackPanel>
+                    <ToggleButton Style="{StaticResource EcSwitch}"
+                                  IsChecked="{Binding HidePhysical}"
+                                  Content="Hide physical controller while mapping" />
+                    <TextBlock Text="{Binding HidHideStatus}"
+                               Style="{StaticResource EcCaptionText}"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="Virtual controller position" Style="{StaticResource EcHeaderText}" Margin="2,0,0,4" />
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,12">
+                <StackPanel>
+                    <ComboBox Style="{StaticResource EcComboBox}"
+                              ItemContainerStyle="{StaticResource EcComboBoxItem}"
+                              ItemsSource="{Binding ControllerPositions}"
+                              SelectedIndex="{Binding ControllerPosition, Mode=TwoWay}" />
+                    <TextBlock Text="Which XInput player slot the virtual Xbox 360 pad uses. Pick a slot to avoid the pad landing further down the list."
+                               Style="{StaticResource EcCaptionText}"
+                               TextWrapping="Wrap"
+                               Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="Data folder" Style="{StaticResource EcHeaderText}" Margin="2,0,0,4" />
+            <TextBlock Text="{Binding DataFolder}"
+                       Style="{StaticResource EcCaptionText}"
+                       TextWrapping="Wrap" />
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,27 @@
+<Application x:Class="EasyControl.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:EasyControl.ViewModels"
+             xmlns:views="clr-namespace:EasyControl.Views"
+             ThemeMode="Dark"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/DarkPurple.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+
+            <DataTemplate DataType="{x:Type vm:DevicesViewModel}">
+                <views:DevicesPage />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
+                <views:ProfilePage />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+                <views:SettingsPage />
+            </DataTemplate>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

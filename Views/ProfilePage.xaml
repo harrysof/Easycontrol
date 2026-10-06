@@ -1,0 +1,320 @@
+<UserControl x:Class="EasyControl.Views.ProfilePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+
+        <!-- Compact chip toggle (used for the per-axis Invert switch) -->
+        <Style x:Key="EcChipToggle" TargetType="ToggleButton">
+            <Setter Property="Foreground" Value="{StaticResource EcTextSecondary}" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="Bd"
+                                CornerRadius="6"
+                                Padding="8,0"
+                                Background="Transparent"
+                                BorderBrush="{StaticResource EcBorderStrong}"
+                                BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource EcAccent}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource EcAccent}" />
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource EcAccent}" />
+                                <Setter Property="Foreground" Value="White" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- A clickable row representing one Xbox 360 output -->
+        <Style x:Key="EcTargetCard" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource EcTextPrimary}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                Background="{StaticResource EcSurface}"
+                                BorderBrush="{StaticResource EcBorder}"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Padding="12,9">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource EcAccent}" />
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource EcSurfaceAlt}" />
+                            </Trigger>
+                            <DataTrigger Binding="{Binding IsCapturing}" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource EcAccentLight}" />
+                                <Setter TargetName="Bd" Property="Background" Value="#2A2140" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="EcTargetRow">
+            <Grid Margin="0,0,0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Style="{StaticResource EcTargetCard}"
+                        Command="{Binding AssignCommand}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="{Binding Label}"
+                                       Style="{StaticResource EcHeaderText}"
+                                       TextTrimming="CharacterEllipsis" />
+                            <TextBlock x:Name="StatusText"
+                                       Text="{Binding Status}"
+                                       FontSize="11"
+                                       Foreground="{StaticResource EcTextMuted}"
+                                       TextTrimming="CharacterEllipsis"
+                                       Margin="0,3,0,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Foreground" Value="{StaticResource EcTextMuted}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding HasSource}" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource EcTextSecondary}" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsCapturing}" Value="True">
+                                                <Setter Property="Foreground" Value="{StaticResource EcAccentLighter}" />
+                                                <Setter Property="FontWeight" Value="SemiBold" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Hint}"
+                                   Style="{StaticResource EcCaptionText}"
+                                   VerticalAlignment="Center"
+                                   Margin="8,0,0,0"
+                                   Visibility="{Binding ShowHint, Converter={StaticResource BoolToVisibility}}" />
+                    </Grid>
+                </Button>
+
+                <ToggleButton Grid.Column="1"
+                              Style="{StaticResource EcChipToggle}"
+                              Content="Invert"
+                              Margin="6,0,0,0"
+                              VerticalAlignment="Stretch"
+                              IsChecked="{Binding IsInverted, Mode=TwoWay}"
+                              IsEnabled="{Binding HasSource}"
+                              Visibility="{Binding CanInvert, Converter={StaticResource BoolToVisibility}}" />
+
+                <Button Grid.Column="2"
+                        Style="{StaticResource EcGhostButton}"
+                        Content="&#xE711;"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="12"
+                        Padding="8,7"
+                        Margin="6,0,0,0"
+                        ToolTip="Clear"
+                        Command="{Binding ClearCommand}"
+                        Visibility="{Binding HasSource, Converter={StaticResource BoolToVisibility}}" />
+            </Grid>
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+
+            <!-- Input -> Output card -->
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,10">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="INPUT" Style="{StaticResource EcCaptionText}" />
+                            <TextBlock Text="{Binding DeviceName}"
+                                       Style="{StaticResource EcHeaderText}"
+                                       TextTrimming="CharacterEllipsis"
+                                       Margin="0,2,0,0" />
+                        </StackPanel>
+                        <Border Grid.Column="1" CornerRadius="4" Padding="6,2" Background="#2E2846" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding DeviceBadge}"
+                                       FontSize="9"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource EcAccentLighter}" />
+                        </Border>
+                    </Grid>
+
+                    <Border Height="1" Background="{StaticResource EcBorder}" Margin="0,10,0,10" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="OUTPUT" Style="{StaticResource EcCaptionText}" />
+                            <TextBlock Text="{Binding OutputStatus}"
+                                       Style="{StaticResource EcBodyText}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,2,8,0" />
+                        </StackPanel>
+                        <Border Grid.Column="1" CornerRadius="4" Padding="6,2" Background="#1E3A2E" VerticalAlignment="Center">
+                            <TextBlock Text="XBOX 360"
+                                       FontSize="9"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource EcSuccess}" />
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Profile name -->
+            <TextBlock Text="Profile name" Style="{StaticResource EcSecondaryText}" Margin="2,0,0,4" />
+            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource EcTextBox}"
+                     Margin="0,0,0,10" />
+
+            <!-- Switches -->
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,10">
+                <StackPanel>
+                    <ToggleButton Style="{StaticResource EcSwitch}"
+                                  IsChecked="{Binding IsDefault}"
+                                  Content="Set as default profile" />
+                    <ToggleButton Style="{StaticResource EcSwitch}"
+                                  IsChecked="{Binding IsMappingEnabled}"
+                                  Content="Mapping enabled"
+                                  Margin="0,12,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Screenshot -->
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Screenshot button" Style="{StaticResource EcHeaderText}" />
+                    <TextBlock Text="{Binding ScreenshotLabel}"
+                               Style="{StaticResource EcSecondaryText}"
+                               Margin="0,4,0,8" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Assign button"
+                                Style="{StaticResource EcPrimaryButton}"
+                                Command="{Binding SetScreenshotCommand}" />
+                        <Button Content="Clear"
+                                Style="{StaticResource EcGhostButton}"
+                                Command="{Binding ClearScreenshotCommand}"
+                                Margin="8,0,0,0" />
+                    </StackPanel>
+                    <TextBlock Text="Press a controller button, or any key on the keyboard, to bind it to the screenshot (Win+PrtScn)."
+                               Style="{StaticResource EcCaptionText}"
+                               TextWrapping="Wrap"
+                               Margin="0,6,0,0"
+                               Visibility="{Binding IsCapturing, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Game Bar -->
+            <Border Style="{StaticResource EcCard}" Margin="0,0,0,10">
+                <StackPanel>
+                    <TextBlock Text="Xbox Game Bar (Win+G)" Style="{StaticResource EcHeaderText}" />
+                    <TextBlock Text="{Binding GameBarLabel}"
+                               Style="{StaticResource EcSecondaryText}"
+                               Margin="0,4,0,8" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Assign button"
+                                Style="{StaticResource EcPrimaryButton}"
+                                Command="{Binding SetGameBarCommand}" />
+                        <Button Content="Clear"
+                                Style="{StaticResource EcGhostButton}"
+                                Command="{Binding ClearGameBarCommand}"
+                                Margin="8,0,0,0" />
+                    </StackPanel>
+                    <TextBlock Text="Press the controller's Guide/Home button (or any key) to bind it here. It will open the Game Bar instead of its browser/OS default."
+                               Style="{StaticResource EcCaptionText}"
+                               TextWrapping="Wrap"
+                               Margin="0,6,0,0"
+                               Visibility="{Binding IsCapturingGameBar, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Mapping -->
+            <TextBlock Text="Mapping" Style="{StaticResource EcHeaderText}" Margin="2,0,0,4" />
+            <TextBlock Text="Tap a control below, then press or move the matching control on your controller."
+                       Style="{StaticResource EcCaptionText}"
+                       TextWrapping="Wrap"
+                       Margin="2,0,0,8" />
+
+            <!-- Listening banner -->
+            <Border CornerRadius="8"
+                    Padding="12,9"
+                    Margin="0,0,0,10"
+                    Background="#2A2140"
+                    BorderBrush="{StaticResource EcAccentLight}"
+                    BorderThickness="1"
+                    Visibility="{Binding IsListening, Converter={StaticResource BoolToVisibility}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="Listening for input&#x2026;"
+                                   Foreground="{StaticResource EcAccentLighter}"
+                                   FontSize="12"
+                                   FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding CapturingRow.Label}"
+                                   Foreground="{StaticResource EcTextSecondary}"
+                                   FontSize="11"
+                                   TextTrimming="CharacterEllipsis"
+                                   Margin="0,3,0,0" />
+                    </StackPanel>
+                    <Button Grid.Column="1"
+                            Content="Cancel"
+                            Style="{StaticResource EcGhostButton}"
+                            VerticalAlignment="Center"
+                            Command="{Binding CancelAssignCommand}" />
+                </Grid>
+            </Border>
+
+            <TextBlock Text="Buttons" Style="{StaticResource EcSecondaryText}" Margin="2,0,0,6" />
+            <ItemsControl ItemsSource="{Binding ButtonRows}"
+                          ItemTemplate="{StaticResource EcTargetRow}"
+                          Margin="0,0,0,10" />
+
+            <TextBlock Text="Triggers" Style="{StaticResource EcSecondaryText}" Margin="2,0,0,6" />
+            <ItemsControl ItemsSource="{Binding TriggerRows}"
+                          ItemTemplate="{StaticResource EcTargetRow}"
+                          Margin="0,0,0,10" />
+
+            <TextBlock Text="Sticks" Style="{StaticResource EcSecondaryText}" Margin="2,0,0,6" />
+            <ItemsControl ItemsSource="{Binding StickRows}"
+                          ItemTemplate="{StaticResource EcTargetRow}" />
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
